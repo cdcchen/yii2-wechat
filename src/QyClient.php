@@ -15,7 +15,7 @@ use yii\base\Component;
 use yii\caching\Cache;
 use yii\di\Instance;
 
-class Client extends Component
+class QyClient extends Component
 {
     /**
      * @var \yii\caching\Cache
@@ -47,7 +47,7 @@ class Client extends Component
     public function setAccessToken($corp_id, $group = 'admin', Token $token)
     {
         $this->accessTokens[$corp_id] = $token;
-        $this->setAccessTokenToCache($corp_id, $group, $token->value, $token->expire);
+        $this->setAccessTokenToCache($corp_id, $group, $token, $token->expire);
     }
 
     /**
@@ -64,7 +64,7 @@ class Client extends Component
             if ($token === false) {
                 $token = $this->getAccessTokenFromApi($corp_id, $secret, $group);
                 if ($token) {
-                    $this->setAccessToken($corp_id, $token);
+                    $this->setAccessToken($corp_id, $group, $token);
                 } else {
                     throw new ApiException('From original api to get access token error.');
                 }
@@ -97,7 +97,7 @@ class Client extends Component
         return new Token([
             'cropId' => $corp_id,
             'value' => $token['access_token'],
-            'expire' => $token['expire'],
+            'expire' => $token['expires_in'],
             'group' => $group,
         ]);
     }
@@ -105,10 +105,10 @@ class Client extends Component
     /**
      * @param string $corp_id
      * @param string $group
-     * @param string $token
+     * @param Token $token
      * @param int $expire
      */
-    private function setAccessTokenToCache($corp_id, $group = 'admin', $token, $expire)
+    private function setAccessTokenToCache($corp_id, $group = 'admin', Token $token, $expire)
     {
         $this->cache->set($this->buildCacheKey($corp_id, $group), $token, $expire);
     }

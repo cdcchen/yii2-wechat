@@ -22,7 +22,11 @@ class Token extends Object
     public function __construct(array $config)
     {
         parent::__construct($config);
-
         $this->createdAt = time();
+    }
+
+    public function hasExpired()
+    {
+        return (time() - $this->createdAt) >= $this->expire;
     }
 }
