@@ -28,6 +28,8 @@ class QyClient extends Component
      */
     private $accessTokens = [];
 
+    private $_cacheKey;
+
     /**
      * @throws \yii\base\InvalidConfigException
      */
@@ -45,12 +47,13 @@ class QyClient extends Component
     /**
      * @param string $corp_id
      * @param Token $token
-     * @param string $group
+     * @param string $secret
      */
-    public function setAccessToken($corp_id, $group = 'admin', Token $token)
+    public function setAccessToken($corp_id, $secret, Token $token)
     {
-        $this->accessTokens[$corp_id] = $token;
-        $this->setAccessTokenToCache($corp_id, $group, $token, $token->expire);
+        $cacheKey = $this->getCacheKey($corp_id, $secret);
+        $this->accessTokens[$cacheKey] = $token;
+        $this->setAccessTokenToCache($corp_id, $secret, $token, $token->expire);
     }
 
     /**
@@ -62,30 +65,31 @@ class QyClient extends Component
      */
     public function getAccessToken($corp_id, $secret, $group = 'admin')
     {
-        if (empty($this->accessTokens[$corp_id])) {
-            $token = $this->getAccessTokenFromCache($corp_id, $group);
+        $cacheKey = $this->getCacheKey($corp_id, $secret);
+        if (empty($this->accessTokens[$cacheKey])) {
+            $token = $this->getAccessTokenFromCache($corp_id, $secret);
             if ($token === false) {
                 $token = $this->getAccessTokenFromApi($corp_id, $secret, $group);
                 if ($token) {
-                    $this->setAccessToken($corp_id, $group, $token);
+                    $this->setAccessToken($corp_id, $secret, $token);
                 } else {
                     throw new ApiException('From original api to get access token error.');
                 }
             }
-            $this->accessTokens[$corp_id] = $token;
+            $this->accessTokens[$cacheKey] = $token;
         }
 
-        return $this->accessTokens[$corp_id];
+        return $this->accessTokens[$cacheKey];
     }
 
     /**
      * @param string $corp_id
-     * @param string $group
+     * @param string $secret
      * @return string|false
      */
-    private function getAccessTokenFromCache($corp_id, $group = 'admin')
+    private function getAccessTokenFromCache($corp_id, $secret)
     {
-        return $this->cache->get($this->buildCacheKey($corp_id, $group));
+        return $this->cache->get($this->getCacheKey($corp_id, $secret));
     }
 
     /**
@@ -107,22 +111,26 @@ class QyClient extends Component
 
     /**
      * @param string $corp_id
-     * @param string $group
+     * @param string $secret
      * @param Token $token
      * @param int $expire
      */
-    private function setAccessTokenToCache($corp_id, $group = 'admin', Token $token, $expire)
+    private function setAccessTokenToCache($corp_id, $secret, Token $token, $expire)
     {
-        $this->cache->set($this->buildCacheKey($corp_id, $group), $token, $expire);
+        $this->cache->set($this->getCacheKey($corp_id, $secret), $token, $expire);
     }
 
     /**
      * @param string $corp_id
-     * @param string $group
+     * @param string $secret
      * @return string
      */
-    private function buildCacheKey($corp_id, $group)
+    private function getCacheKey($corp_id, $secret)
     {
-        return $corp_id . '-' . $group;
+        if ($this->_cacheKey === null) {
+            $this->_cacheKey = md5($corp_id . '-' . $secret);
+        }
+
+        return $this->_cacheKey;
     }
 }
