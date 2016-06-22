@@ -17,7 +17,6 @@ class Token extends Object
     public $value;
     public $expire;
     public $createdAt;
-    public $group;
 
     public function __construct(array $config)
     {

@@ -10,24 +10,40 @@ namespace cdcchen\yii\wechat;
 
 
 use cdcchen\wechat\base\ApiException;
-use cdcchen\wechat\qy\AccessToken;
+use cdcchen\wechat\qy\TokenClient;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\caching\Cache;
 use yii\di\Instance;
 
+/**
+ * Class QyClient
+ * @package cdcchen\yii\wechat
+ */
 class QyClient extends Component
 {
+    /**
+     * default access token
+     */
+    const TOKEN_TYPE_DEFAULT = 'default';
+    /**
+     * provider access token
+     */
+    const TOKEN_TYPE_PROVIDER = 'provider';
+
     /**
      * @var \yii\caching\Cache
      */
     public $cache;
 
     /**
-     * @var AccessToken[]
+     * @var Token[]
      */
     private $accessTokens = [];
 
+    /**
+     * @var string
+     */
     private $_cacheKey;
 
     /**
@@ -45,33 +61,55 @@ class QyClient extends Component
     }
 
     /**
-     * @param string $corp_id
+     * @param string $corpId
      * @param Token $token
      * @param string $secret
      */
-    public function setAccessToken($corp_id, $secret, Token $token)
+    protected function setAccessToken($corpId, $secret, Token $token)
     {
-        $cacheKey = $this->getCacheKey($corp_id, $secret);
+        $cacheKey = $this->getCacheKey($corpId, $secret);
         $this->accessTokens[$cacheKey] = $token;
-        $this->setAccessTokenToCache($corp_id, $secret, $token, $token->expire);
+        $this->setAccessTokenToCache($corpId, $secret, $token);
     }
 
     /**
-     * @param string $corp_id
+     * @param string $corpId
      * @param string $secret
-     * @param string $group
-     * @return string|null
+     * @return null|string
      * @throws ApiException
      */
-    public function getAccessToken($corp_id, $secret, $group = 'admin')
+    public function getDefaultToken($corpId, $secret)
     {
-        $cacheKey = $this->getCacheKey($corp_id, $secret);
+        return $this->getAccessToken($corpId, $secret, self::TOKEN_TYPE_DEFAULT);
+    }
+
+    /**
+     * @param $corpId
+     * @param $secret
+     * @return null|string
+     * @throws ApiException
+     */
+    public function getProviderToken($corpId, $secret)
+    {
+        return $this->getAccessToken($corpId, $secret, self::TOKEN_TYPE_PROVIDER);
+    }
+
+    /**
+     * @param string $corpId
+     * @param string $secret
+     * @param string $type
+     * @return Token|string|null
+     * @throws ApiException
+     */
+    private function getAccessToken($corpId, $secret, $type)
+    {
+        $cacheKey = $this->getCacheKey($corpId, $secret);
         if (empty($this->accessTokens[$cacheKey])) {
-            $token = $this->getAccessTokenFromCache($corp_id, $secret);
+            $token = $this->getAccessTokenFromCache($corpId, $secret);
             if ($token === false) {
-                $token = $this->getAccessTokenFromApi($corp_id, $secret, $group);
+                $token = $this->getAccessTokenFromApi($corpId, $secret, $type);
                 if ($token) {
-                    $this->setAccessToken($corp_id, $secret, $token);
+                    $this->setAccessToken($corpId, $secret, $token);
                 } else {
                     throw new ApiException('From original api to get access token error.');
                 }
@@ -83,52 +121,86 @@ class QyClient extends Component
     }
 
     /**
-     * @param string $corp_id
+     * @param string $corpId
      * @param string $secret
-     * @return string|false
+     * @return Token|string|false
      */
-    private function getAccessTokenFromCache($corp_id, $secret)
+    private function getAccessTokenFromCache($corpId, $secret)
     {
-        return $this->cache->get($this->getCacheKey($corp_id, $secret));
+        $cacheKey = $this->getCacheKey($corpId, $secret);
+        return $this->cache->get($cacheKey);
     }
 
     /**
-     * @param $corp_id
-     * @param $secret
-     * @param $group
+     * @param string $corpId
+     * @param string $secret
+     * @param string $type
+     * @return Token
+     * @throws \InvalidArgumentException
+     */
+    private function getAccessTokenFromApi($corpId, $secret, $type)
+    {
+        if ($type === self::TOKEN_TYPE_DEFAULT) {
+            return $this->getDefaultTokenFromApi($corpId, $secret);
+        } elseif ($type === self::TOKEN_TYPE_PROVIDER) {
+            return $this->getProviderTokenFromApi($corpId, $secret);
+        } else {
+            throw new \InvalidArgumentException("$type is a not valid token type.");
+        }
+    }
+
+    /**
+     * @param string $corpId
+     * @param string $secret
      * @return Token
      */
-    private function getAccessTokenFromApi($corp_id, $secret, $group)
+
+    private function getDefaultTokenFromApi($corpId, $secret)
     {
-        $token = AccessToken::fetch($corp_id, $secret);
+        $token = TokenClient::getDefaultToken($corpId, $secret);
         return new Token([
-            'cropId' => $corp_id,
+            'cropId' => $corpId,
             'value' => $token['access_token'],
             'expire' => $token['expires_in'],
-            'group' => $group,
         ]);
     }
 
     /**
-     * @param string $corp_id
+     * @param string $corpId
      * @param string $secret
-     * @param Token $token
-     * @param int $expire
+     * @return Token
      */
-    private function setAccessTokenToCache($corp_id, $secret, Token $token, $expire)
+
+    private function getProviderTokenFromApi($corpId, $secret)
     {
-        $this->cache->set($this->getCacheKey($corp_id, $secret), $token, $expire);
+        $token = TokenClient::getDefaultToken($corpId, $secret);
+        return new Token([
+            'cropId' => $corpId,
+            'value' => $token['provider_access_token'],
+            'expire' => $token['expires_in'],
+        ]);
     }
 
     /**
-     * @param string $corp_id
+     * @param string $corpId
+     * @param string $secret
+     * @param Token $token
+     */
+    private function setAccessTokenToCache($corpId, $secret, Token $token)
+    {
+        $cacheKey = $this->getCacheKey($corpId, $secret);
+        $this->cache->set($cacheKey, $token, $token->expire);
+    }
+
+    /**
+     * @param string $corpId
      * @param string $secret
      * @return string
      */
-    private function getCacheKey($corp_id, $secret)
+    private function getCacheKey($corpId, $secret)
     {
         if ($this->_cacheKey === null) {
-            $this->_cacheKey = md5($corp_id . '-' . $secret);
+            $this->_cacheKey = md5($corpId . '-' . $secret);
         }
 
         return $this->_cacheKey;
