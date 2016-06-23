@@ -42,11 +42,6 @@ class QyClient extends Component
     private $accessTokens = [];
 
     /**
-     * @var string
-     */
-    private $_cacheKey;
-
-    /**
      * @throws \yii\base\InvalidConfigException
      */
     public function init()
@@ -199,10 +194,6 @@ class QyClient extends Component
      */
     private function getCacheKey($corpId, $secret)
     {
-        if ($this->_cacheKey === null) {
-            $this->_cacheKey = md5($corpId . '-' . $secret);
-        }
-
-        return $this->_cacheKey;
+        return md5($corpId . '-' . $secret);
     }
 }
