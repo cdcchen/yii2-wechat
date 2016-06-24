@@ -11,19 +11,42 @@ namespace cdcchen\yii\wechat;
 
 use yii\base\Object;
 
+/**
+ * Class Token
+ * @package cdcchen\yii\wechat
+ */
 class Token extends Object
 {
+    /**
+     * @var string
+     */
     public $cropId;
+    /**
+     * @var string
+     */
     public $value;
+    /**
+     * @var int
+     */
     public $expire;
+    /**
+     * @var int
+     */
     public $createdAt;
 
+    /**
+     * Token constructor.
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->createdAt = time();
     }
 
+    /**
+     * @return bool
+     */
     public function hasExpired()
     {
         return (time() - $this->createdAt) >= $this->expire;

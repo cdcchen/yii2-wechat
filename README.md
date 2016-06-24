@@ -1,31 +1,43 @@
 # yii2-wechat 组件使用说明
 
-> 此组件的主要功能只有一个，就是自动管理access token的失效及获取，利用缓存的失效时间自动重新获取新的access token。
+### [[1.x 文档请移步到此 >>>]]
 
 
-### 第一步：在components中加入组件配置：
+## 第一步：在components中加入组件配置：
 
 ```php
-'wechat' => [
+'qyWechat' => [
     'class' => 'cdcchen\yii\wechat\QyClient',
     'cache' => 'cache',
 ]
 ```
-> 注：`cache` 属性为必需项。
+
+> 注：cache属性为必需项。
 
 
-### 第二步：在action代码中调用：
+## 第二步：在action代码中调用：
 
 ```php
 /* @var \cdcchen\yii\wechat\QyClient $wechat */
-$wechat = Yii::$app->get('wechat');
-
-// 获取 Access Token
-/* @var \cdcchen\yii\wechat\Token $token */
-$token = $wechat->getAccessToken($corpId, $secret);
+$wechat = Yii::$app->get('qyWechat');
 ```
 
-$`token` 的类型为 `\cdcchen\yii\wechat\Token`：
+获取【主动消息接口的 Access Token】
+
+```
+/* @var \cdcchen\yii\wechat\Token $token */
+$token = $wechat->getDefaultToken($corpId, $secret);
+```
+
+获取【获取应用提供商凭证 Access Token】
+
+```
+/* @var \cdcchen\yii\wechat\Token $token */
+$token = $wechat->getProviderToken($corpId, $secret);
+```
+
+
+$token 的类型为 \cdcchen\yii\wechat\Token：
 
 ```php
 cdcchen\yii\wechat\Token Object
@@ -34,6 +46,15 @@ cdcchen\yii\wechat\Token Object
     [value] => w2M2f2Tj4_-sGHrAv_kdi1__f61exwPUCnvvoJFQ0MPczYttF-22gZuYhV5GHQou
     [expire] => 7200
     [createdAt] => 1462331430
-    [group] => admin
 )
+```
+
+## 第三步：调用具体接口
+
+以获取微信回调服务器IP列表为例：
+
+```php
+use cdcchen\wechat\qy\ServerClient;
+$client = new ServerClient($accessToken);
+$data = $client->getCallbackIP();
 ```
