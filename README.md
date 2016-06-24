@@ -1,6 +1,6 @@
 # yii2-wechat 组件使用说明
 
-### [1.x 文档请移步到此 >>>](/cdcchen/yii2-wechat/wiki/1.x-%E6%96%87%E6%A1%A3%E8%AF%B7%E7%A7%BB%E6%AD%A5%E5%88%B0%E6%AD%A4----)
+### [1.x 文档请移步到此 >>>](//github.com/cdcchen/yii2-wechat/wiki/1.x-%E6%96%87%E6%A1%A3%E8%AF%B7%E7%A7%BB%E6%AD%A5%E5%88%B0%E6%AD%A4----)
 
 
 ## 第一步：在components中加入组件配置：
