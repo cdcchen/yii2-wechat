@@ -24,14 +24,14 @@ $wechat = Yii::$app->get('qyWechat');
 
 获取【主动消息接口的 Access Token】
 
-```
+```php
 /* @var \cdcchen\yii\wechat\Token $token */
 $token = $wechat->getDefaultToken($corpId, $secret);
 ```
 
 获取【获取应用提供商凭证 Access Token】
 
-```
+```php
 /* @var \cdcchen\yii\wechat\Token $token */
 $token = $wechat->getProviderToken($corpId, $secret);
 ```
