@@ -154,7 +154,7 @@ class QyClient extends Component
     {
         $token = TokenClient::getDefaultToken($corpId, $secret);
         return new Token([
-            'cropId' => $corpId,
+            'corpId' => $corpId,
             'value' => $token['access_token'],
             'expire' => $token['expires_in'],
         ]);
@@ -170,7 +170,7 @@ class QyClient extends Component
     {
         $token = TokenClient::getDefaultToken($corpId, $secret);
         return new Token([
-            'cropId' => $corpId,
+            'corpId' => $corpId,
             'value' => $token['provider_access_token'],
             'expire' => $token['expires_in'],
         ]);

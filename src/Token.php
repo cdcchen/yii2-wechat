@@ -20,7 +20,7 @@ class Token extends Object
     /**
      * @var string
      */
-    public $cropId;
+    public $corpId;
     /**
      * @var string
      */
