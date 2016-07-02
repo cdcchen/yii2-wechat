@@ -62,11 +62,11 @@ class JsApiClient extends BaseClient
     {
         $client = new WechatJsApiClient($accessToken);
         $ticket = $client->getJsApiTicket();
-        return [
+        return new Ticket([
             'accessToken' => $accessToken,
             'value' => $ticket['ticket'],
             'expire' => $ticket['expires_in'],
-        ];
+        ]);
     }
 
     /**
@@ -78,11 +78,11 @@ class JsApiClient extends BaseClient
     {
         $client = new WechatJsApiClient($accessToken);
         $ticket = $client->getGroupTicket();
-        return [
+        return new Ticket([
             'accessToken' => $accessToken,
             'value' => $ticket['ticket'],
             'expire' => $ticket['expires_in'],
             'groupId' => $ticket['group_id'],
-        ];
+        ]);
     }
 }

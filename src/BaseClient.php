@@ -29,7 +29,7 @@ abstract class BaseClient extends Object
     protected $data = [];
 
     /**
-     * @param Cache $cache
+     * @param Cache$cache
      * @return $this
      */
     public function setCache(Cache $cache)
