@@ -29,12 +29,12 @@ abstract class BaseClient extends Object
     protected $data = [];
 
     /**
-     * @param Cache$cache
+     * @param Cache|null $cache
      * @return $this
      */
-    public function setCache(Cache $cache)
+    public function setCache($cache)
     {
-        $this->cache = $cache;
+        $this->cache = ($cache instanceof Cache) ? $cache : null;
         return $this;
     }
 
@@ -66,7 +66,6 @@ abstract class BaseClient extends Object
      */
     protected function getCacheKey($parts)
     {
-        $parts = (array)$parts;
-        return md5(join('_', $parts));
+        return md5(join('_', (array)$parts));
     }
 }

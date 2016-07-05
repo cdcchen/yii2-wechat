@@ -22,11 +22,15 @@ class TokenClient extends BaseClient
      */
     public function getDefaultToken($corpId, $secret)
     {
+        if (empty($this->cache)) {
+            return $this->getDefaultTokenFromApi($corpId, $secret);
+        }
+
         $cacheKey = $this->getCacheKey([$corpId, $secret]);
         if (empty($this->getCacheData($cacheKey))) {
-            $ticket = $this->getDefaultTokenFromApi($corpId, $secret);
-            if ($ticket) {
-                $this->setCacheData($cacheKey, $ticket, $ticket->expire);
+            $token = $this->getDefaultTokenFromApi($corpId, $secret);
+            if ($token) {
+                $this->setCacheData($cacheKey, $token, $token->expire);
             } else {
                 throw new ApiException('Get access token error from original api to.');
             }
@@ -45,9 +49,9 @@ class TokenClient extends BaseClient
     {
         $cacheKey = $this->getCacheKey(['provider', $corpId, $secret]);
         if (empty($this->getCacheData($cacheKey))) {
-            $ticket = $this->getProviderTokenFromApi($corpId, $secret);
-            if ($ticket) {
-                $this->setCacheData($cacheKey, $ticket, $ticket->expire);
+            $token = $this->getProviderTokenFromApi($corpId, $secret);
+            if ($token) {
+                $this->setCacheData($cacheKey, $token, $token->expire);
             } else {
                 throw new ApiException('Get access token error from original api to.');
             }

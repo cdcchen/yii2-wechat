@@ -25,6 +25,10 @@ class JsApiClient extends BaseClient
      */
     public function getJsApiTicket($accessToken, $group = false)
     {
+        if (empty($this->cache)) {
+            return $this->getJsTicketFromApi($accessToken, $group);
+        }
+
         $cacheKey = $this->getCacheKey([$accessToken, (string)$group]);
         if (empty($this->getCacheData($cacheKey))) {
             $ticket = $this->getJsTicketFromApi($accessToken, $group);

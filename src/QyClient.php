@@ -10,7 +10,6 @@ namespace cdcchen\yii\wechat;
 
 
 use yii\base\Component;
-use yii\base\InvalidConfigException;
 use yii\caching\Cache;
 use yii\di\Instance;
 
@@ -20,9 +19,8 @@ use yii\di\Instance;
  */
 class QyClient extends Component
 {
-
     /**
-     * @var \yii\caching\Cache
+     * @var \yii\caching\Cache|null
      */
     public $cache;
 
@@ -33,11 +31,9 @@ class QyClient extends Component
     {
         parent::init();
 
-        if (empty($this->cache)) {
-            throw new InvalidConfigException('QyClient::cache property is required.');
+        if (!empty($this->cache)) {
+            $this->cache = Instance::ensure($this->cache, Cache::className());
         }
-
-        $this->cache = Instance::ensure($this->cache, Cache::className());
     }
 
     /**
