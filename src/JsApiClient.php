@@ -29,7 +29,7 @@ class JsApiClient extends BaseClient
         if (empty($this->getCacheData($cacheKey))) {
             $ticket = $this->getJsTicketFromApi($accessToken, $group);
             if ($ticket) {
-                $this->setCacheData($cacheKey, $ticket->value, $ticket->expire);
+                $this->setCacheData($cacheKey, $ticket, $ticket->expire);
             } else {
                 throw new ApiException('Get access token error from original api to.');
             }

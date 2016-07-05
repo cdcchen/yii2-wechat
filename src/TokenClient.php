@@ -26,7 +26,7 @@ class TokenClient extends BaseClient
         if (empty($this->getCacheData($cacheKey))) {
             $ticket = $this->getDefaultTokenFromApi($corpId, $secret);
             if ($ticket) {
-                $this->setCacheData($cacheKey, $ticket->value, $ticket->expire);
+                $this->setCacheData($cacheKey, $ticket, $ticket->expire);
             } else {
                 throw new ApiException('Get access token error from original api to.');
             }
@@ -47,7 +47,7 @@ class TokenClient extends BaseClient
         if (empty($this->getCacheData($cacheKey))) {
             $ticket = $this->getProviderTokenFromApi($corpId, $secret);
             if ($ticket) {
-                $this->setCacheData($cacheKey, $ticket->value, $ticket->expire);
+                $this->setCacheData($cacheKey, $ticket, $ticket->expire);
             } else {
                 throw new ApiException('Get access token error from original api to.');
             }
