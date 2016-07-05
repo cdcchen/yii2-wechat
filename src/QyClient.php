@@ -50,8 +50,8 @@ class QyClient extends Component
     public function getJsApiTicket($corpId, $secret, $group = false)
     {
         $client = (new JsApiClient())->setCache($this->cache);
-        $accessToken = $this->getDefaultToken($corpId, $secret);
-        return $client->getJsApiTicket($accessToken, $group);
+        $token = $this->getDefaultToken($corpId, $secret);
+        return $client->getJsApiTicket($token->value, $group);
     }
 
     /**
