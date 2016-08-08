@@ -13,7 +13,7 @@ use yii\base\Object;
 
 class Token extends Object
 {
-    public $cropId;
+    public $corpId;
     public $value;
     public $expire;
     public $createdAt;
