@@ -100,7 +100,7 @@ class QyClient extends Component
     {
         $token = AccessToken::fetch($corp_id, $secret);
         return new Token([
-            'cropId' => $corp_id,
+            'corpId' => $corp_id,
             'value' => $token['access_token'],
             'expire' => $token['expires_in'],
             'group' => $group,
