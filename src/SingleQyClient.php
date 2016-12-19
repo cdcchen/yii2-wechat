@@ -126,7 +126,7 @@ class SingleQyClient extends Component
         }
 
         $client = (new TokenClient())->setCache($this->cache);
-        return $client->getProviderToken($this->corpId, $this->corpSecret);
+        return $client->getProviderToken($this->corpId, $this->providerSecret);
     }
 
     /**

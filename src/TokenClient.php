@@ -47,6 +47,10 @@ class TokenClient extends BaseClient
      */
     public function getProviderToken($corpId, $secret)
     {
+        if (empty($this->cache)) {
+            return $this->getProviderTokenFromApi($corpId, $secret);
+        }
+
         $cacheKey = $this->getCacheKey(['provider', $corpId, $secret]);
         if (empty($this->getCacheData($cacheKey))) {
             $token = $this->getProviderTokenFromApi($corpId, $secret);
