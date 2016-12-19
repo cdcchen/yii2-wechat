@@ -1,0 +1,6 @@
+bootstrap: spec/bootstrap.php
+
+suites:
+  wechat_suite:
+    namespace: cdcchen\yii\wechat
+    psr4_prefix: cdcchen\yii\wechat

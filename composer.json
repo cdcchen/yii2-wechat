@@ -3,9 +3,11 @@
   "description": "yii2 wechat component",
   "keywords": [
     "yii2 wechat",
-    "yii2 wechat helper",
+    "yii2 wechat extension",
     "yii2 weixin",
-    "yii2 weixin helper"
+    "yii2 weixin extension",
+    "qy weixin extension",
+    "qy wechat extension"
   ],
   "type": "yii2-extension",
   "homepage": "https://github.com/cdcchen/yii2-wechat",
@@ -27,8 +29,11 @@
     "php": ">=5.4.0",
     "cdcchen/curl-client": "^1.0.0",
     "cdcchen/file-helper": "^1.0.0",
-    "cdcchen/wechat-client": "^2.0.0",
-    "yiisoft/yii2": "^2.0.8"
+    "cdcchen/wechat-client": "^2.0.0"
+  },
+  "require-dev": {
+    "yiisoft/yii2": "^2.0.0",
+    "phpspec/phpspec": "^3.2"
   },
   "autoload": {
     "psr-4": {
